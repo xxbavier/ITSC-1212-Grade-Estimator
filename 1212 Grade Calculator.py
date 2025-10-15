@@ -1,49 +1,67 @@
-def get_quiz_grades() -> float:
+NUM_COURSEWORK_ASSIGNMENTS = 0 # Represents the total number of coursework assignments.
+COURSEWORK_POINTS = 0 # Represents the total number of points earned from coursework assignments.
+
+def add_coursework_grades() -> None:
     '''
     Input:
         This function does not take any input parameters.
     Process:
         Prompts the user for how many quizzes they have completed.
         For each quiz, it prompts the user for their grade on the quiz.
+        Adds the grade to the global variable COURSEWORK_POINTS.
+        Increments the global variable NUM_COURSEWORK_ASSIGNMENTS by 1 for each quiz
     Output:
-        Returns the quiz average as a float.
+        Returns None.
     '''
-    print("----------- Quiz Grades -----------")
-    grade_sum = 0
-    num_quizzes = int(input("Enter the number for the most recent module quiz: "))
+    global NUM_COURSEWORK_ASSIGNMENTS
+    global COURSEWORK_POINTS
 
-    for i in range(num_quizzes):
-        grade = float(input("Enter your grade for \"Module " + str(i) + ": Quiz\" (0-100): "))
-        grade = grade / 100 # Scale the grade to be out of 1 instead of 100.
-        grade_sum += grade
+    print("----------- Remainder of Coursework Grades -----------")
+    num_quizzes = int(input("Enter the number for the most recent module: "))
+
+    for i in range(num_quizzes+1):
+        quiz = float(input("Enter your grade for \"Module " + str(i) + ": Quiz\" (0-100): "))/100 # Scale the grade to be out of 1 instead of 100.
+        prep = float(input("Enter your grade for \"Module " + str(i) + ": Prep\" (0-1): "))
+        checkout = float(input("Enter your grade for \"Module " + str(i) + ": Checkout\" (0-1): "))
+
+        lecture = float(input(f"Enter your attendance grade for \"Module {i} Lecture Attendance\" (0-1): "))
+        lab1 = float(input(f"Enter your attendance grade for \"Module {i} Lab 1 Attendance\" (0-1): "))
+        lab2 = float(input(f"Enter your attendance grade for \"Module {i} Lab 2 Attendance\" (0-1): "))
+        
+        COURSEWORK_POINTS += quiz + prep + checkout + lab1 + lab2 + lecture
+        NUM_COURSEWORK_ASSIGNMENTS += 6
+
         print()
 
     print("------------------------------------")
 
-    return grade_sum / num_quizzes # Return the average of the quiz grades.
-
-def get_problem_set_grades() -> float:
+def add_problem_set_grades() -> float:
     '''
     Input:
         This function does not take any input parameters.
     Process:
         Prompts the user for how many problem sets they have completed.
         For each problem set, it prompts the user for their grade on the problem set.
+        Adds the grade to the global variable COURSEWORK_POINTS.
+        Increments the global variable NUM_COURSEWORK_ASSIGNMENTS by 1 for each problem
     Output:
-        Returns the problem set average as a float.
+        Returns None.
     '''
+    global NUM_COURSEWORK_ASSIGNMENTS
+    global COURSEWORK_POINTS
+
     print("-------- Problem Set Grades --------")
-    grade_sum = 0
     num_problem_sets = int(input("Enter the number for the most recent problem set: "))
 
     for i in range(num_problem_sets+1): # Loop through the number of problem sets, start from 0 since the first Problem Set is Problem Set 0.
         grade = float(input("Enter your grade for \"Problem Set " + str(i) + "\" (0-1): "))
-        grade_sum += grade
+        
+        COURSEWORK_POINTS += grade
+        NUM_COURSEWORK_ASSIGNMENTS += 1
+        
         print()
 
     print("------------------------------------")
-
-    return grade_sum / (num_problem_sets + 1) # Return the average of the problem set grades.
 
 
 def get_checkpoint_grade() -> float:
@@ -58,6 +76,7 @@ def get_checkpoint_grade() -> float:
     Output:
         Returns the average of the checkpoint grades.
     '''
+
     print("--------- Checkpoint Grade ---------")
     num_checkpoints = int(input("Enter the number of checkpoints you have completed: "))
     
@@ -76,12 +95,15 @@ def main() -> None:
     Input:
         This function does not take any input parameters.
     Process:
-        Calls the functions to get the checkpoint grade, problem set average, and quiz average.
+        Calculates the checkpoint average.
         Calculates the coursework average.
         Calculates the total grade estimate.
     Output:
         Prints the total grade estimate.
     '''
+    global NUM_COURSEWORK_ASSIGNMENTS
+    global COURSEWORK_POINTS
+
     print("------- 1212 Grade Estimator -------")
     print("Made by Xavier Engelbrecht")
     print()
@@ -100,12 +122,12 @@ def main() -> None:
     print()
 
 
-    # Run the functions and store the results in variables.
+    # Store the checkpoint grade, and then populate the NUM_COURSEWORK_ASSIGNMENTS and COURSEWORK_POINTS variables.
     checkpoint_grade = get_checkpoint_grade()
-    problem_set_average = get_problem_set_grades()
-    quiz_average = get_quiz_grades()
+    add_problem_set_grades()
+    add_coursework_grades()
 
-    coursework_average = ((problem_set_average + quiz_average) / 2) * 100
+    coursework_average = (COURSEWORK_POINTS/NUM_COURSEWORK_ASSIGNMENTS) * 100
 
     # Display the total grade estimate.
     print("------- Total Grade Estimate -------")
